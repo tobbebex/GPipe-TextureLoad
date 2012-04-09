@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 -----------------------------------------------------------------------------
 --
 -- Module      :  Graphics.GPipe.Texture.Load
@@ -23,9 +24,8 @@ module Graphics.GPipe.Texture.Load (
 
 import Graphics.GPipe
 import Codec.Image.STB
-import Data.Bitmap.IO (withBitmap)
-import Data.Either
 import Foreign.Ptr (plusPtr)
+import Data.Bitmap.Pure (withBitmap)
 
 -- | Provides the general way of loading any kind of textures. A 3D texture is assumed to be an array of square images
 -- tiled vertically in the image file. Cube textures are assumed to be composed of 6 equally sized images
@@ -51,7 +51,7 @@ class LoadableTexture3D f where
 loadTexture' comp io path = do image <- loadImage' path comp
                                either
                                   (ioError . userError)
-                                  (flip withBitmap io)
+                                  (`withBitmap` io)
                                   image
 
 texture3DFromImage cpufmt fmt path s@(w,h) comp 0 ptr =
